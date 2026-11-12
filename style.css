@@ -1,0 +1,112 @@
+:root {
+  --stage-width: min(100vw, 160vh);
+  --stage-width: min(100vw, 160dvh);
+  --masthead-height: calc(var(--stage-width) * 440 / 5760);
+  --change: 520ms;
+  --drop: 650ms;
+  background: #fff;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+button { font: inherit; }
+[hidden] { display: none !important; }
+
+.masthead {
+  position: fixed;
+  z-index: 2;
+  inset: 0 0 auto;
+  height: var(--masthead-height);
+  background: #653a27 url("./assets/masthead.png") center / 100% 100% no-repeat;
+}
+
+.navigation,
+.stage {
+  position: relative;
+  width: var(--stage-width);
+  margin-inline: auto;
+}
+
+.navigation { height: 100%; }
+.navigation button {
+  position: absolute;
+  inset-block: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.navigation img,
+.layer,
+.object img {
+  position: absolute;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+.navigation img { max-width: none; }
+.navigation button[aria-pressed="false"] img[data-selected="true"],
+.navigation button[aria-pressed="true"] img[data-selected="false"] {
+  visibility: hidden;
+}
+
+button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -3px;
+}
+
+.stage {
+  aspect-ratio: 8 / 5;
+  overflow: hidden;
+  background: #514c2e;
+  isolation: isolate;
+}
+
+.stage > div {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.layer,
+.object {
+  opacity: 0;
+  transition: opacity var(--change) ease-in-out;
+}
+
+.layer.visible,
+.object.visible { opacity: 1; }
+
+.object {
+  position: absolute;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  touch-action: none;
+  cursor: pointer;
+}
+
+.object img { inset: 0; width: 100%; height: 100%; }
+.object.visible:not(:disabled) { pointer-events: auto; }
+.object:disabled { cursor: default; }
+.object.drag-ready { cursor: grab; }
+.object.dragging { cursor: grabbing; }
+.object.dropping {
+  animation: drop var(--drop) cubic-bezier(.25, .7, .32, 1) both;
+  transition: none;
+}
+@keyframes drop {
+  from { transform: translateY(calc(-100% - var(--masthead-height))); }
+  to { transform: translateY(0); }
+}
+.caption { transition: opacity 220ms ease; }
+.caption:not(.visible) { transition: none; }
+.instant .layer,
+.instant .object { transition: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --change: 1ms; --drop: 1ms; }
+  .caption { transition-duration: 1ms; }
+}
